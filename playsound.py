@@ -24,10 +24,12 @@ play_obj.wait_done()  # Wait until sound has finished playing
 r = sr.Recognizer()
 
 print(sr.Microphone.list_microphone_names())
-mic = sr.Microphone(device_index=3)
+mic = sr.Microphone(device_index=2)
 with mic as source:
     r.adjust_for_ambient_noise(source)
+    print("listening")
     audio = r.listen(source)
+    print("listened")
 
 response = {
     "success": True,
@@ -36,7 +38,9 @@ response = {
 }
 
 try:
+    print("transcribing")
     response["transcription"] = r.recognize_sphinx(audio)
+    print("transcribed")
 except sr.RequestError as re:
     # API was unreachable or unresponsive
     response["success"] = False
