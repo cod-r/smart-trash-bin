@@ -14,6 +14,7 @@ import speech_recognition as sr
 # sudo apt-get install swig pulseaudio libpulse-dev
 # pip3 install --upgrade pip setuptools wheel
 # pip3 install --upgrade pocketsphinx
+# sudo apt-get install flac
 
 
 filename = 'gunoi1.wav'
@@ -24,7 +25,7 @@ play_obj.wait_done()  # Wait until sound has finished playing
 r = sr.Recognizer()
 
 print(sr.Microphone.list_microphone_names())
-mic = sr.Microphone(device_index=2)
+mic = sr.Microphone()
 with mic as source:
     r.adjust_for_ambient_noise(source)
     print("listening")
