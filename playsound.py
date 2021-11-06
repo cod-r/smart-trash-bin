@@ -39,7 +39,7 @@ response = {
 
 try:
     print("transcribing")
-    response["transcription"] = r.recognize_google(audio)
+    response["transcription"] = r.recognize_sphinx(audio)
     print("transcribed")
 except sr.RequestError as re:
     # API was unreachable or unresponsive
