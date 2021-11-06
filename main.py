@@ -23,7 +23,7 @@ TEVUSCA_LEFT_180 = 0.000001
 
 GPIO.setmode(GPIO.BCM)
 servoTevusca = 12
-servoCuva = 16
+servoCuva = 13
 GPIO.setup(servoTevusca, GPIO.OUT, initial=GPIO.LOW)
 GPIO.setup(servoCuva, GPIO.OUT, initial=GPIO.LOW)
 
