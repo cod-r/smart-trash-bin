@@ -29,7 +29,7 @@ mic = sr.Microphone()
 with mic as source:
     r.adjust_for_ambient_noise(source)
     print("listening")
-    audio = r.listen(source=source, phrase_time_limit=4)
+    audio = r.record(source=source, duration=4)
     print("listened")
 
 response = {
