@@ -28,7 +28,7 @@ mic = sr.Microphone(device_index=2)
 with mic as source:
     r.adjust_for_ambient_noise(source)
     print("listening")
-    audio = r.listen(source)
+    audio = r.listen(source=source, phrase_time_limit=2)
     print("listened")
 
 response = {
@@ -39,7 +39,7 @@ response = {
 
 try:
     print("transcribing")
-    response["transcription"] = r.recognize_sphinx(audio)
+    response["transcription"] = r.recognize_google(audio)
     print("transcribed")
 except sr.RequestError as re:
     # API was unreachable or unresponsive
