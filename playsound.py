@@ -16,4 +16,5 @@ play_obj = wave_obj.play()
 play_obj.wait_done()  # Wait until sound has finished playing
 
 r = sr.Microphone.list_microphone_names()
+print(r)
 # r.recognize_sphinx()
