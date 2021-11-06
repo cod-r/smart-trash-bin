@@ -70,7 +70,7 @@ def get_prediction(path):
 try:
     while True:
         date_time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
-        image_path = 'image_' + date_time + '.jpg'
+        image_path = '/home/pi/image_' + date_time + '.jpg'
         capture_image(image_path)
         prediction = get_prediction(image_path)
 
