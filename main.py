@@ -3,12 +3,19 @@ import time
 from picamera import PiCamera
 import picamera.array
 
-CUVA_NEUTRAL = 5
-CUVA_DOWN = 0.000001
+CUVA_NEUTRAL = 7.5
+CUVA_DOWN = 12.5
 
-TEVUSCA_NEUTRAL = 5
-TEVUSCA_LEFT_90 = 0.000001
-TEVUSCA_RIGHT_90 = 9
+# tevusca 3 pozitii
+# TEVUSCA_NEUTRAL = 5
+# TEVUSCA_LEFT_90 = 0.000001
+# TEVUSCA_RIGHT_90 = 9
+
+# tevusca 4 pozitii
+TEVUSCA_NEUTRAL = 7.5
+TEVUSCA_RIGHT_90 = 12.5
+TEVUSCA_LEFT_90 = 3.7
+TEVUSCA_LEFT_180 = 0.000001
 
 picam = PiCamera()
 picam.framerate = 10
@@ -27,10 +34,18 @@ tevusca.start(TEVUSCA_NEUTRAL)
 cuva.start(CUVA_NEUTRAL)
 time.sleep(2)
 
-# quick test
+# quick test cuva
+cuva.ChangeDutyCycle(CUVA_DOWN)
+time.sleep(2)
+cuva.ChangeDutyCycle(CUVA_NEUTRAL)
+time.sleep(2)
+
+# quick test tevusca
 tevusca.ChangeDutyCycle(TEVUSCA_LEFT_90)
 time.sleep(2)
 tevusca.ChangeDutyCycle(TEVUSCA_RIGHT_90)
+time.sleep(2)
+tevusca.ChangeDutyCycle(TEVUSCA_LEFT_180)
 time.sleep(2)
 tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
 time.sleep(2)
@@ -49,44 +64,44 @@ def get_prediction(image):
     return 'prediction'
 
 
-try:
-    while True:
-        image = capture_image()
-        prediction = get_prediction(image)
-
-        if prediction == 'sticla':
-            print('sticla')
-            tevusca.ChangeDutyCycle(TEVUSCA_LEFT_90)
-            time.sleep(2)
-            # Empty cuva
-            cuva.ChangeDutyCycle(CUVA_DOWN)
-            time.sleep(2)
-            cuva.ChangeDutyCycle(CUVA_NEUTRAL)
-            print('sticla deployed')
-
-        elif prediction == 'hartie':
-            print('hartie')
-            tevusca.ChangeDutyCycle(TEVUSCA_RIGHT_90)
-            time.sleep(2)
-            # Empty cuva
-            cuva.ChangeDutyCycle(CUVA_DOWN)
-            time.sleep(2)
-            cuva.ChangeDutyCycle(CUVA_NEUTRAL)
-            print('hartie deployed')
-
-        elif prediction == 'menajer':
-            print('menajer')
-            tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
-            time.sleep(2)
-            # Empty cuva
-            cuva.ChangeDutyCycle(CUVA_DOWN)
-            time.sleep(2)
-            cuva.ChangeDutyCycle(CUVA_NEUTRAL)
-            print('menajer deployed')
-
-
-except KeyboardInterrupt:
-    print("Terminated by pressing CTRL+C ")
-finally:
-    GPIO.cleanup()
-    picam.close()
+# try:
+#     while True:
+#         image = capture_image()
+#         prediction = get_prediction(image)
+#
+#         if prediction == 'sticla':
+#             print('sticla')
+#             tevusca.ChangeDutyCycle(TEVUSCA_LEFT_90)
+#             time.sleep(2)
+#             # Empty cuva
+#             cuva.ChangeDutyCycle(CUVA_DOWN)
+#             time.sleep(2)
+#             cuva.ChangeDutyCycle(CUVA_NEUTRAL)
+#             print('sticla deployed')
+#
+#         elif prediction == 'hartie':
+#             print('hartie')
+#             tevusca.ChangeDutyCycle(TEVUSCA_RIGHT_90)
+#             time.sleep(2)
+#             # Empty cuva
+#             cuva.ChangeDutyCycle(CUVA_DOWN)
+#             time.sleep(2)
+#             cuva.ChangeDutyCycle(CUVA_NEUTRAL)
+#             print('hartie deployed')
+#
+#         elif prediction == 'menajer':
+#             print('menajer')
+#             tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
+#             time.sleep(2)
+#             # Empty cuva
+#             cuva.ChangeDutyCycle(CUVA_DOWN)
+#             time.sleep(2)
+#             cuva.ChangeDutyCycle(CUVA_NEUTRAL)
+#             print('menajer deployed')
+#
+#
+# except KeyboardInterrupt:
+#     print("Terminated by pressing CTRL+C ")
+# finally:
+GPIO.cleanup()
+#     picam.close()
