@@ -1,7 +1,16 @@
 import RPi.GPIO as GPIO
 import time
+import datetime
 from picamera import PiCamera
-import picamera.array
+import requests
+
+picam = PiCamera()
+picam.framerate = 10
+picam.resolution = (1024, 768)
+picam.rotation = 180
+# warm camera
+camera.start_preview()
+time.sleep(2)
 
 CUVA_NEUTRAL = 7.5
 CUVA_DOWN = 12.5
@@ -16,11 +25,6 @@ TEVUSCA_NEUTRAL = 7.5
 TEVUSCA_RIGHT_90 = 12.5
 TEVUSCA_LEFT_90 = 3.7
 TEVUSCA_LEFT_180 = 0.000001
-
-picam = PiCamera()
-picam.framerate = 10
-picam.resolution = (320, 240)
-picam.rotation = 180
 
 GPIO.setmode(GPIO.BCM)
 servoTevusca = 12
@@ -51,57 +55,64 @@ tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
 time.sleep(2)
 
 
-def capture_image():
-    raw_capture = picamera.array.PiRGBArray(picam)
-    picam.capture(raw_capture, format='rgb', use_video_port=True)
-    img = raw_capture.array.astype('uint8')
-
-    return img
+def capture_image(path):
+    picam.capture(path, use_video_port=True)
 
 
-def get_prediction(image):
-    # TODO call prediction api
-    return 'prediction'
+def get_prediction(path):
+    url = 'http://192.168.1.168:8080/prediction'
+    files = {'file': (open(path, 'rb'))}
+    response = requests.post(url, files=files)
+    print(response.json())
+    return response.json()
 
 
-# try:
-#     while True:
-#         image = capture_image()
-#         prediction = get_prediction(image)
-#
-#         if prediction == 'sticla':
-#             print('sticla')
-#             tevusca.ChangeDutyCycle(TEVUSCA_LEFT_90)
-#             time.sleep(2)
-#             # Empty cuva
-#             cuva.ChangeDutyCycle(CUVA_DOWN)
-#             time.sleep(2)
-#             cuva.ChangeDutyCycle(CUVA_NEUTRAL)
-#             print('sticla deployed')
-#
-#         elif prediction == 'hartie':
-#             print('hartie')
-#             tevusca.ChangeDutyCycle(TEVUSCA_RIGHT_90)
-#             time.sleep(2)
-#             # Empty cuva
-#             cuva.ChangeDutyCycle(CUVA_DOWN)
-#             time.sleep(2)
-#             cuva.ChangeDutyCycle(CUVA_NEUTRAL)
-#             print('hartie deployed')
-#
-#         elif prediction == 'menajer':
-#             print('menajer')
-#             tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
-#             time.sleep(2)
-#             # Empty cuva
-#             cuva.ChangeDutyCycle(CUVA_DOWN)
-#             time.sleep(2)
-#             cuva.ChangeDutyCycle(CUVA_NEUTRAL)
-#             print('menajer deployed')
-#
-#
-# except KeyboardInterrupt:
-#     print("Terminated by pressing CTRL+C ")
-# finally:
-GPIO.cleanup()
-#     picam.close()
+try:
+    while True:
+        date_time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_%f")
+        image_path = '/home/pi/image_' + date_time + '.jpg'
+        capture_image(image_path)
+        prediction = get_prediction(image_path)
+
+        if prediction == 'GLASS':
+            tevusca.ChangeDutyCycle(TEVUSCA_LEFT_90)
+            time.sleep(2)
+            # Empty cuva
+            cuva.ChangeDutyCycle(CUVA_DOWN)
+            time.sleep(2)
+            cuva.ChangeDutyCycle(CUVA_NEUTRAL)
+            print('sticla deployed')
+
+        elif prediction == 'PAPER':
+            tevusca.ChangeDutyCycle(TEVUSCA_RIGHT_90)
+            time.sleep(2)
+            # Empty cuva
+            cuva.ChangeDutyCycle(CUVA_DOWN)
+            time.sleep(2)
+            cuva.ChangeDutyCycle(CUVA_NEUTRAL)
+            print('hartie deployed')
+
+        elif prediction == 'WASTE':
+            tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
+            time.sleep(2)
+            # Empty cuva
+            cuva.ChangeDutyCycle(CUVA_DOWN)
+            time.sleep(2)
+            cuva.ChangeDutyCycle(CUVA_NEUTRAL)
+            print('menajer deployed')
+
+        elif prediction == 'PLASTIC':
+            tevusca.ChangeDutyCycle(TEVUSCA_LEFT_180)
+            time.sleep(2)
+            # Empty cuva
+            cuva.ChangeDutyCycle(CUVA_DOWN)
+            time.sleep(2)
+            cuva.ChangeDutyCycle(CUVA_NEUTRAL)
+            print('menajer deployed')
+
+
+except KeyboardInterrupt:
+    print("Terminated by pressing CTRL+C ")
+finally:
+    GPIO.cleanup()
+    picam.close()
