@@ -6,13 +6,14 @@ import requests
 
 picam = PiCamera()
 picam.framerate = 10
-picam.resolution = (1024, 768)
-picam.rotation = 180
+picam.resolution = (1296, 730)
+# picam.rotation = 180
+# picam.zoom = (0.5, 0.5, 0.5, 0.5)
 # warm camera
 picam.start_preview()
 time.sleep(2)
 
-CUVA_NEUTRAL = 5
+CUVA_NEUTRAL = 4
 CUVA_DOWN = 10
 
 # tevusca 4 pozitii
@@ -72,14 +73,14 @@ try:
         capture_image(image_path)
         prediction = get_prediction(image_path)
 
-        if prediction == 'GLASS':
+        if prediction == 'METAL':
             tevusca.ChangeDutyCycle(TEVUSCA_LEFT_90)
             time.sleep(2)
             # Empty cuva
             cuva.ChangeDutyCycle(CUVA_DOWN)
             time.sleep(2)
             cuva.ChangeDutyCycle(CUVA_NEUTRAL)
-            print('sticla deployed')
+            print('metal deployed')
             tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
 
         elif prediction == 'PAPER':
@@ -92,18 +93,8 @@ try:
             print('hartie deployed')
             tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
 
-        elif prediction == 'WASTE':
-            tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
-            time.sleep(2)
-            # Empty cuva
-            cuva.ChangeDutyCycle(CUVA_DOWN)
-            time.sleep(2)
-            cuva.ChangeDutyCycle(CUVA_NEUTRAL)
-            print('menajer deployed')
-            tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
-
         elif prediction == 'PLASTIC':
-            tevusca.ChangeDutyCycle(TEVUSCA_LEFT_180)
+            tevusca.ChangeDutyCycle(TEVUSCA_NEUTRAL)
             time.sleep(2)
             # Empty cuva
             cuva.ChangeDutyCycle(CUVA_DOWN)
